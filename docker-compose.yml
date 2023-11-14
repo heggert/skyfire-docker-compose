@@ -1,51 +1,49 @@
-
 version: '3.8'
 
 services:
-  mariadb:
-    image: mariadb:latest
-    environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: skyfire
-      MYSQL_USER: skyfire
-      MYSQL_PASSWORD: skyfirepassword
+  mysql:
+    image: mysql:8
+    command: --default-authentication-plugin=mysql_native_password
+    env_file:
+      - .env
     ports:
       - "3306:3306"
     volumes:
-      - mariadb_data:/var/lib/mysql
+      - skyfire_mysql_data:/var/lib/mysql
 
-  authserver:
-    build:
-      context: ./path_to_authserver_dockerfile
-    depends_on:
-      - mariadb
-    environment:
-      - DB_HOST=mariadb
-      - DB_PORT=3306
-      - DB_USER=skyfire
-      - DB_PASSWORD=skyfirepassword
-    ports:
-      - "3724:3724"
 
-  worldserver:
-    build:
-      context: ./path_to_worldserver_dockerfile
-    depends_on:
-      - mariadb
-    environment:
-      - DB_HOST=mariadb
-      - DB_PORT=3306
-      - DB_USER=skyfire
-      - DB_PASSWORD=skyfirepassword
-    ports:
-      - "8085:8085"
+  # authserver:
+  #   build:
+  #     context: ./path_to_authserver_dockerfile
+  #   depends_on:
+  #     - mysql
+  #   environment:
+  #     - DB_HOST=mysql
+  #     - DB_PORT=3306
+  #     - DB_USER=skyfire
+  #     - DB_PASSWORD=skyfirepassword
+  #   ports:
+  #     - "3724:3724"
 
-  extractor:
-    build:
-      context: ./path_to_extractor_dockerfile
-    command: /bin/bash -c "while true; do sleep 1000; done" # Keeps the container running.
-    depends_on:
-      - worldserver
+  # worldserver:
+  #   build:
+  #     context: ./path_to_worldserver_dockerfile
+  #   depends_on:
+  #     - mysql
+  #   environment:
+  #     - DB_HOST=mysql
+  #     - DB_PORT=3306
+  #     - DB_USER=skyfire
+  #     - DB_PASSWORD=skyfirepassword
+  #   ports:
+  #     - "8085:8085"
+
+  # extractor:
+  #   build:
+  #     context: ./path_to_extractor_dockerfile
+  #   command: /bin/bash -c "while true; do sleep 1000; done" # Keeps the container running.
+  #   depends_on:
+  #     - worldserver
 
 volumes:
-  mariadb_data:
+  skyfire_mysql_data:
